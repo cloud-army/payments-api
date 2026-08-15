@@ -1,0 +1,29 @@
+name: CI - Build and Push to Harbor
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-push:
+    runs-on: [self-hosted, huaira]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Harbor
+        run: echo "Harbor12345" | docker login harbor.harbor.svc.cluster.local -u admin --password-stdin
+
+      - name: Build image
+        run: |
+          SHORT_SHA=${GITHUB_SHA::8}
+          docker build \
+            -t harbor.harbor.svc.cluster.local/library/payments-api:${SHORT_SHA} \
+            -t harbor.harbor.svc.cluster.local/library/payments-api:latest .
+
+      - name: Push to Harbor
+        run: |
+          SHORT_SHA=${GITHUB_SHA::8}
+          docker push harbor.harbor.svc.cluster.local/library/payments-api:${SHORT_SHA}
+          docker push harbor.harbor.svc.cluster.local/library/payments-api:latest
