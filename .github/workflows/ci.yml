@@ -12,18 +12,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Login to Harbor
-        run: echo "Harbor12345" | docker login harbor.harbor.svc.cluster.local -u admin --password-stdin
+      - name: Install crane
+        run: |
+          curl -sL https://github.com/google/go-containerregistry/releases/download/v0.20.2/go-containerregistry_Linux_arm64.tar.gz \
+            | tar -xz -C /usr/local/bin crane
+          crane version
 
       - name: Build image
         run: |
           SHORT_SHA=${GITHUB_SHA::8}
           docker build \
-            -t harbor.harbor.svc.cluster.local/library/payments-api:${SHORT_SHA} \
-            -t harbor.harbor.svc.cluster.local/library/payments-api:latest .
+            -t payments-api:${SHORT_SHA} \
+            -t payments-api:latest .
 
-      - name: Push to Harbor
+      - name: Push to Harbor via crane
         run: |
           SHORT_SHA=${GITHUB_SHA::8}
-          docker push harbor.harbor.svc.cluster.local/library/payments-api:${SHORT_SHA}
-          docker push harbor.harbor.svc.cluster.local/library/payments-api:latest
+          REGISTRY=harbor.harbor.svc.cluster.local
+          docker save payments-api:${SHORT_SHA} | \
+            crane push --insecure --platform linux/arm64 \
+              -u admin -p Harbor12345 \
+              - ${REGISTRY}/library/payments-api:${SHORT_SHA}
+          docker save payments-api:latest | \
+            crane push --insecure --platform linux/arm64 \
+              -u admin -p Harbor12345 \
+              - ${REGISTRY}/library/payments-api:latest
