@@ -1,7 +1,13 @@
-FROM python:3.6-slim-buster
+FROM golang:1.23-alpine AS builder
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py .
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o payments-api .
+
+FROM alpine:3.21
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+COPY --from=builder /app/payments-api .
 EXPOSE 8080
-CMD ["python", "app.py"]
+CMD ["./payments-api"]

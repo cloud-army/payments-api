@@ -1,0 +1,5 @@
+payments-api
+*.test
+.env
+.env.*
+vendor/

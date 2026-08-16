@@ -26,8 +26,8 @@ spec:
     spec:
       containers:
       - name: app
-        image: harbor.harbor.svc.cluster.local/library/payments-api:latest
-        imagePullPolicy: IfNotPresent
+        image: ghcr.io/cloud-army/payments-api:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
