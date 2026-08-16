@@ -24,6 +24,8 @@ spec:
         prometheus.io/port: "8080"
         prometheus.io/path: "/metrics"
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: app
         image: ghcr.io/cloud-army/payments-api:latest
