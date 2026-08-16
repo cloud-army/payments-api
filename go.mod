@@ -2,7 +2,10 @@ module github.com/cloud-army/payments-api
 
 go 1.25.1
 
-require github.com/prometheus/client_golang v1.24.1
+require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/prometheus/client_golang v1.24.1
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
