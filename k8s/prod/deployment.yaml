@@ -28,7 +28,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: app
-        image: ghcr.io/cloud-army/payments-api:latest
+        image: ghcr.io/cloud-army/payments-api:sha-b180ff48
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
